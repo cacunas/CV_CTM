@@ -68,6 +68,9 @@ private:
     //Discard Low Intensity and Low Gradient pixels
     void DLowIntGrad(QImage* src, QImage* dst);
 
+    // ROI dirty hack
+    void HackForeGround();
+
     //Detect Players
     void ForeGround();
 

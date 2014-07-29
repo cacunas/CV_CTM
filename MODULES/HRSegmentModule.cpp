@@ -316,6 +316,32 @@ void HRSegmentModule::DLowIntGrad(QImage* src, QImage *dst)
     }
 }
 
+void HRSegmentModule::HackForeGround()
+{
+    /* This module discard pixels outside the ROI, 'cause the example is dirty */
+    QImage* img = m_data->bgImage;
+    QRgb pixel;
+
+    for (int x=0; x < img->width(); x++) {
+        for (int y=0; y < img->height(); y++) {
+            pixel = img->pixel(x,y);
+
+            if (
+                    (y-84) <= (((202-84)/(257-28))*(x-28)) && \\ L1-2
+                    (y-202) <= (((110-202)/(524-257))*(x-257)) && \\ L2-3
+                    (y-110) >= (((45-110)/(218-524))*(x-524)) && \\ L3-4
+                    (y-45) >= (((84-45)/(28-218))*(x-218))
+               )
+            {
+                img->setPixel(x,y,m_data->currentImage->pixel(x,y));
+            } else {
+                img->setPixel(x,y,qRgb(0,0,0));
+            }
+
+        }
+    }
+}
+
 void HRSegmentModule::ForeGround()
 {
     /* First, we apply a 3x3 Median Filter to non-grass areas (including players) */
@@ -359,7 +385,7 @@ void HRSegmentModule::ForeGround()
     Mat element = getStructuringElement(cv::MORPH_CROSS, cv::Size(3,3));
     morphologyEx(binMask, binMask, cv::MORPH_OPEN, element);
 
-    //morphologyEx(binMask, binMask, cv::MORPH_CLOSE, element);
+    morphologyEx(binMask, binMask, cv::MORPH_CLOSE, element);
 
     //delete img;
     img = new QImage(ASM::cvMatToQImage(binMask));
