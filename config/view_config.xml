@@ -14,7 +14,7 @@
         <Row value="0"/>
         <Column value="1"/>
         <Label value="Grass Detector"/>
-                <afterModule value="HMTrackingModule"/>
+                <afterModule value="HRSegmentModule"/>
                 <sequence value="true">
                         <setBackground/>
                 </sequence>
@@ -23,7 +23,7 @@
         <Row value="1"/>
         <Column value="0"/>
         <Label value="Gray Background"/>
-                <afterModule value="HMTrackingModule"/>
+                <afterModule value="HRSegmentModule"/>
                 <sequence value="true">
                         <setColouredForeground/>
                 </sequence>
@@ -32,7 +32,7 @@
         <Row value="1"/>
         <Column value="1"/>
         <Label value="Improved Background"/>
-                <afterModule value="HMTrackingModule"/>
+                <afterModule value="HRSegmentModule"/>
                 <sequence value="true">
                         <setPersonality/>
                 </sequence>

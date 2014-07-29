@@ -1,35 +1,35 @@
-#include "HMTrackingModule.h"
+#include "HRSegmentModule.h"
 
 using namespace std;
 using namespace cv;
 
-HMTrackingModule::HMTrackingModule(Datapool* i_data) :
+HRSegmentModule::HRSegmentModule(Datapool* i_data) :
     ModuleInterface(i_data) {
     this->firstTime = true;
     this->alpha = 0.1;
     this->beta = 0.75;
 }
 
-HMTrackingModule::~HMTrackingModule()
+HRSegmentModule::~HRSegmentModule()
 {
 
 }
 
-bool HMTrackingModule::setParameters(QDomNode& config)
+bool HRSegmentModule::setParameters(QDomNode& config)
 {
     if(config.isNull()) {
         return true;
     }
 
-    return true;
+    return false;
 }
 
-bool HMTrackingModule::init()
+bool HRSegmentModule::init()
 {
     return true;
 }
 
-bool HMTrackingModule::run()
+bool HRSegmentModule::run()
 {
     if(this->firstTime)
     {
@@ -71,28 +71,17 @@ bool HMTrackingModule::run()
 
     this->DLowIntGrad(m_data->currentImage, m_data->persoImage);
 
-    this->DetectPlayers();
+    this->ForeGround();
 
     return true;
 }
 
-bool HMTrackingModule::updateParameters()
+bool HRSegmentModule::updateParameters()
 {
     return true;
 }
 
-Mat HMTrackingModule::qimage_to_mat_cpy(QImage* img, int format)
-{
-    return cv::Mat(
-                img->height(),
-                img->width(),
-                format,
-                img->bits(),
-                img->bytesPerLine()
-                ).clone();
-}
-
-vector<hist> HMTrackingModule::calculateHistograms(QImage *img)
+vector<hist> HRSegmentModule::calculateHistograms(QImage *img)
 {
     vector<hist> channels(4);
 
@@ -114,7 +103,7 @@ vector<hist> HMTrackingModule::calculateHistograms(QImage *img)
     return channels;
 }
 
-vector<float> HMTrackingModule::calculateMoments(vector<hist> channels) {
+vector<float> HRSegmentModule::calculateMoments(vector<hist> channels) {
     vector<float> fMoments(4,0.);
     vector<float> sMoments(4,0.);
 
@@ -141,7 +130,7 @@ vector<float> HMTrackingModule::calculateMoments(vector<hist> channels) {
     return moments;
 }
 
-void HMTrackingModule::calculatePeaks(vector<hist> channels)
+void HRSegmentModule::calculatePeaks(vector<hist> channels)
 {
     vector<float> peaks(4,0);
 
@@ -175,7 +164,7 @@ void HMTrackingModule::calculatePeaks(vector<hist> channels)
         A_p[ch] = peaks[ch];
 }
 
-void HMTrackingModule::calculateThresholds(vector<hist> ch) {
+void HRSegmentModule::calculateThresholds(vector<hist> ch) {
     vector<float> moments = this->calculateMoments(ch);
 
     for (int ch=0; ch<3; ch++) {
@@ -185,7 +174,7 @@ void HMTrackingModule::calculateThresholds(vector<hist> ch) {
     A_t[3] = A_p[3] + beta * sqrt(moments[7]-moments[3]*moments[3]);
 }
 
-void HMTrackingModule::GrassClassifier()
+void HRSegmentModule::GrassClassifier()
 {
     QImage *image = m_data->currentImage;
 
@@ -227,7 +216,7 @@ void HMTrackingModule::GrassClassifier()
 }
 
 
-void HMTrackingModule::Line_detect()
+void HRSegmentModule::Line_detect()
 {
     if(m_data->currentImage == NULL)
     {
@@ -271,7 +260,7 @@ void HMTrackingModule::Line_detect()
 }
 
 
-void HMTrackingModule::ApplyFilter(QImage *f_in, QImage *f_out)
+void HRSegmentModule::ApplyFilter(QImage *f_in, QImage *f_out)
 {
     int w = f_in->width(), h = f_in->height();
 
@@ -289,7 +278,7 @@ void HMTrackingModule::ApplyFilter(QImage *f_in, QImage *f_out)
     memcpy(fout_p, f.data, h*bl);
 }
 
-void HMTrackingModule::DLowIntGrad(QImage* src, QImage *dst)
+void HRSegmentModule::DLowIntGrad(QImage* src, QImage *dst)
 {
     if (src == NULL)
     {
@@ -327,7 +316,7 @@ void HMTrackingModule::DLowIntGrad(QImage* src, QImage *dst)
     }
 }
 
-void HMTrackingModule::DetectPlayers()
+void HRSegmentModule::ForeGround()
 {
     /* First, we apply a 3x3 Median Filter to non-grass areas (including players) */
     QImage* img = new QImage(*(m_data->bgImage));
@@ -350,8 +339,6 @@ void HMTrackingModule::DetectPlayers()
     Mat src = ASM::QImageToCvMat(*img);
     Mat dst;
 
-
-
     // Apply median filter
     medianBlur ( src, dst, 3 );
 
@@ -370,11 +357,11 @@ void HMTrackingModule::DetectPlayers()
 
     // Apply aperture
     Mat element = getStructuringElement(cv::MORPH_CROSS, cv::Size(3,3));
-    morphologyEx(binIm, binIm, cv::MORPH_OPEN, element);
+    morphologyEx(binMask, binMask, cv::MORPH_OPEN, element);
 
+    morphologyEx(binMask, binMask, cv::MORPH_CLOSE, element);
 
-    img = new QImage(ASM::cvMatToQImage(binIm));
-    //img = &aux;
+    img = new QImage(ASM::cvMatToQImage(binMask));
 
     m_data->rFgImage = img;
 }

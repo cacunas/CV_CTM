@@ -1,5 +1,5 @@
-#ifndef HMTRACKINGMODULE_H
-#define HMTRACKINGMODULE_H
+#ifndef HRSEGMENTMODULE_H
+#define HRSEGMENTMODULE_H
 
 #include <QImage>
 #include <QDir>
@@ -20,11 +20,11 @@ typedef std::vector<int> hist;
 
 using namespace std;
 
-class HMTrackingModule : public ModuleInterface
+class HRSegmentModule : public ModuleInterface
 {
 public:
-    HMTrackingModule(Datapool* i_data);
-    ~HMTrackingModule();
+    HRSegmentModule(Datapool* i_data);
+    ~HRSegmentModule();
 
     //Set module configuration parameters
     bool setParameters(QDomNode& config);
@@ -43,9 +43,6 @@ private:
     float alpha, beta;
     float A_p[4];// histogram intensity peaks (R,G,B,Gray)
     float A_t[4];// intensity thresholds (R,G,B,Gray)
-
-    //Convert QImage to cv::Mat
-    cv::Mat qimage_to_mat_cpy(QImage* img, int format);
 
     //Calculates Intensity Histograms per channel
     vector<hist> calculateHistograms(QImage* img);
@@ -72,8 +69,8 @@ private:
     void DLowIntGrad(QImage* src, QImage* dst);
 
     //Detect Players
-    void DetectPlayers();
+    void ForeGround();
 
 };
 
-#endif // HMTRACKINGMODULE_H
+#endif // HRSEGMENTMODULE_H

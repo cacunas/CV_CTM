@@ -13,4 +13,4 @@ AcquisitionModule
 #ObjectFilteringModule
 #HullToObjectModule
 #PlanarStatisticsModule
-HMTrackingModule
+HRSegmentModule
