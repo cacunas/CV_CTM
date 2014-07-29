@@ -8,8 +8,8 @@
     <ModuleSequenceFile value="config/default_module_sequence.txt"/>
 
     <!-- Configuration File for Views: -->
-<!--    <ViewConfigFile value="config/view_config.xml"/>-->
-    <ViewConfigFile value="config/view-football_config.xml"/>
+    <ViewConfigFile value="config/view_config.xml"/>
+<!--    <ViewConfigFile value="config/view-football_config.xml"/>-->
 
     <!--Activates Time Stats on executed modules-->
     <ActivateTimeStats value="yes">
@@ -43,10 +43,10 @@
 <!--    <videoDirectory value="/home/mzuniga/VIDEOS/HAMSTER-DIRS/0000" />-->
     <!--videoDirectory value="/home/mzuniga/VIDEOS/DEGUS/CIRCULAR1" /-->
 <!--    <videoDirectory value="/home/mzuniga/VIDEOS/DEGUS/CIRCULAR2" />-->
-<!--    <videoDirectory value="/media/extra-ext4/VIDEOS/DEGUS/LBJ/hembras/dia1/303LBD1" />-->-->
+<!--    <videoDirectory value="/media/extra-ext4/VIDEOS/DEGUS/LBJ/hembras/dia1/303LBD1" />-->
 <!--    <videoDirectory value="/home/labcv/videoFootball/alfheim/" />-->
     <videoDirectory value="/home/cacunas/Escritorio/CV_CTM/VideoFiles/" />
-    <videoDirectory value="/home/cacunas/Escritorio/CV_CTM/VideoFiles" />
+<!--    <videoDirectory value="/home/cacunas/Escritorio/CV_CTM/VideoFiles" />-->
     <!--videoDirectory value="/home/mzuniga/VIDEOS/PERSO-JPG" /-->
 
     <!--<videoDirectory value="/VAT-DATA/VIDEOS/FOOTBALL"/>-->
@@ -64,7 +64,7 @@
    <videoDirectory value="VideoFiles" />
    <defaultMillisecs value="40" />
    <saveCurrent value="yes" />-->
-</HMTracingModule>
+</HMTrackingModule>
 
 
 </MODULE_PARAMETERS>
