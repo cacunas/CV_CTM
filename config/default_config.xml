@@ -8,7 +8,8 @@
     <ModuleSequenceFile value="config/default_module_sequence.txt"/>
 
     <!-- Configuration File for Views: -->
-    <ViewConfigFile value="config/view_config.xml"/>
+<!--    <ViewConfigFile value="config/view_config.xml"/>-->
+    <ViewConfigFile value="config/view-football_config.xml"/>
 
     <!--Activates Time Stats on executed modules-->
     <ActivateTimeStats value="yes">
@@ -27,15 +28,43 @@
 <!--Archivo de configuracion por defecto-->
 <!--AcquisitionModule-->
 <AcquisitionModule>
-    <startFrame value="200" /> <!-- New degu video, bad illumination first -->
-     <subDirectories value="no" />
-    <videoDirectory value="./VideoFiles" />
+    <startFrame value="1" />
+    <!--<startFrame value="200" />--> <!-- New degu video, bad illumination first -->
+    <!--startFrame value="145" /--> <!-- Degu chico -->
+    <!--startFrame value="100" /--> <!-- Degu circular -->
+    <!--startFrame value="100" /--> <!-- Degu circular -->
+    <!--startFrame value="0" /--> <!-- Personality -->
+    <!--startFrame value="820" /--> <!-- First degu video-->
+    <subDirectories value="no" />
+    <!--<subDirectories value="no" />-->
+    <!--<videoDirectory value="/home/mzuniga/SECUENCIA-TEST" />-->
+    <!--videoDirectory value="/home/mzuniga/VIDEOS/DEGU2" /-->
+    <!--videoDirectory value="/home/mzuniga/VIDEOS/PRUEBA" /-->
+<!--    <videoDirectory value="/home/mzuniga/VIDEOS/HAMSTER-DIRS/0000" />-->
+    <!--videoDirectory value="/home/mzuniga/VIDEOS/DEGUS/CIRCULAR1" /-->
+<!--    <videoDirectory value="/home/mzuniga/VIDEOS/DEGUS/CIRCULAR2" />-->
+<!--    <videoDirectory value="/media/extra-ext4/VIDEOS/DEGUS/LBJ/hembras/dia1/303LBD1" />-->-->
+<!--    <videoDirectory value="/home/labcv/videoFootball/alfheim/" />-->
+    <videoDirectory value="/home/cacunas/Escritorio/CV_CTM/VideoFiles/" />
+    <videoDirectory value="/home/cacunas/Escritorio/CV_CTM/VideoFiles" />
+    <!--videoDirectory value="/home/mzuniga/VIDEOS/PERSO-JPG" /-->
+
+    <!--<videoDirectory value="/VAT-DATA/VIDEOS/FOOTBALL"/>-->
+
+    <!--videoDirectory value="/home/mzuniga/VIDEOS/FOOTBALL" /-->
+    <!--Last resource if VAT is not able to recover a proper milliseconds difference from image timestamps (maybe unexisting timestamp). -->
     <defaultMillisecs value="40" />
+  <!--store currentImage in previousImage /-->
     <saveCurrent value="yes" />
 </AcquisitionModule>
 
 <HMTrackingModule>
-</HMTrackingModule>
+<!--   <startFrame value="200" />
+   <subDirectories value="no" />
+   <videoDirectory value="VideoFiles" />
+   <defaultMillisecs value="40" />
+   <saveCurrent value="yes" />-->
+</HMTracingModule>
 
 
 </MODULE_PARAMETERS>

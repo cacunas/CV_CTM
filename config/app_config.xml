@@ -2,11 +2,11 @@
 <APP_PARAMETERS>
 <!--Archivo de configuracion de la aplicacion-->
 
-<!--<ViewConfigFile value="config/view_config.xml"/>-->
+<ViewConfigFile value="config/view_config.xml"/>
 <!--<ViewConfigFile value="config/view-degu_config.xml"/>-->
 <!--<ViewConfigFile value="config/view-gray_config.xml"/>-->
 <!--<ViewConfigFile value="config/view-degu_config-debug.xml"/>-->
-<ViewConfigFile value="config/view-football_config.xml"/>
+<!--<ViewConfigFile value="config/view-football_config.xml"/>-->
 <!--<ViewConfigFile value="config/view-perso_config.xml"/>-->
 
 <!--Activa Time Stats de los modulos ejecutados-->
