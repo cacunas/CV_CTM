@@ -352,7 +352,7 @@ void HMTrackingModule::DetectPlayers()
 
 
 
-    //Apply median filter
+    // Apply median filter
     medianBlur ( src, dst, 3 );
 
     // gray version
@@ -367,7 +367,13 @@ void HMTrackingModule::DetectPlayers()
     // then adjust the threshold to actually make it binary
     threshold(grayIm, binMask, 100, 255, CV_THRESH_BINARY);
 
-    img = new QImage(ASM::cvMatToQImage(dst));
+
+    // Apply aperture
+    Mat element = getStructuringElement(cv::MORPH_CROSS, cv::Size(3,3));
+    morphologyEx(binIm, binIm, cv::MORPH_OPEN, element);
+
+
+    img = new QImage(ASM::cvMatToQImage(binIm));
     //img = &aux;
 
     m_data->rFgImage = img;
