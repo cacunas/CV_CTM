@@ -1,0 +1,83 @@
+<!DOCTYPE VIEW_PARAMETERS>
+<VIEW_PARAMETERS>
+  <!-- ViewDistribution. Possible values: -->
+  <!--   "4Views" : 2 rows and 2 columns of views.  -->
+  <!--   "2ViewsH" : 2 views horizontally.  -->
+  <!--   "2ViewsV" : 2 views vertically.  -->
+<!--  <ViewDistribution value="2ViewsV">-->
+  <ViewDistribution value="4ViewsV">
+    <View value="true">
+      <Row value="0" />
+      <Column value="0" />
+      <Label value="Frame actual" />
+      <afterModule value="AcquisitionModule" />
+<!--      <afterModule value="CameraCalibrationModule" />-->
+<!--      <afterModule value="BlobFilteringModule" />-->
+      <sequence value="true">
+        <setCurrent/>
+<!--        <setBlobs/>-->
+      </sequence>
+    </View>
+
+    <View value="true">
+<!--		<View value="false">-->
+      <Row value="1" />
+      <Column value="0" />
+      <Label value="foreground" />
+<!--			<Label value="field" />-->
+<!--			<afterModule value="TemporalVarianceBGModule" />-->
+<!--			<afterModule value="MorphologyModule" />-->
+      <afterModule value="ConnectedComponentsRLEModule" />
+<!--			<afterModule value="BlobFilteringModule" />-->
+      <sequence value="true">
+        <setForeground/>
+<!--				<setBlobs/>-->
+      </sequence>
+    </View>
+
+    <View value="true">
+<!--		<View value="false">-->
+      <Row value="0" />
+      <Column value="1" />
+      <Label value="Confiabilidad" />
+      <afterModule value="TemporalVarianceBGModule" />
+<!--        <afterModule value="PlayFieldDetectionModule" />-->
+<!--			<afterModule value="ReliabilitySegmentationModule" />-->
+<!--			<afterModule value="BlobFilteringModule" />-->
+      <sequence value="true">
+<!--				<setForeground/>-->
+<!--				<setCurrent/>-->
+        <setReliabilityMap/>
+<!--				<setBlobs/>-->
+      </sequence>
+    </View>
+
+<!--		<View value="true">-->
+    <View value="false">
+      <Row value="1" />
+      <Column value="1" />
+      <Label value="Confiabilidad" />
+      <afterModule value="ReliabilitySegmentationModule" />
+      <sequence value="true">
+      <!--        <setCurrent/>-->
+      <!--        <setColouredForeground />-->
+      <!--				<setObjectHulls/>-->
+        <setReliabilityMap/>
+<!--				<setBlobs />-->
+      </sequence>
+      <SaveToDir value="false">
+      <Directory value="FOOTBALL-MODULE" />
+      </SaveToDir>
+    </View>
+
+  </ViewDistribution>
+  <!-- Size of a single view (352,240) (640,480)-->
+  <ViewSize value="true">
+    <Width value="540" />
+    <Height value="240" />
+<!--    <Width value="350" />-->
+<!--    <Height value="240" />-->
+<!--    <Width value="640" />-->
+<!--    <Height value="480" />-->
+  </ViewSize>
+</VIEW_PARAMETERS>

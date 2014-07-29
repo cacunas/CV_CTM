@@ -1,0 +1,26 @@
+#Archivo de configuracion por defecto
+
+#AcquisitionModule
+AcquisitionModule;startFrame;62665
+#AcquisitionModule;startFrame;0
+AcquisitionModule;subDirectories;no
+
+#FakeSegmentationModule
+# Ground-truth file
+FakeSegmentationModule;fileName;parking.xml
+
+#FakeTrackingModule
+# Ground-truth file
+FakeTrackingModule;fileName;parking.xml
+
+#Position considered from a blob for an object. Values:
+#    MiddleCenter : Position at center-middle of blob
+#    Left         : Position at left-middle of blob
+#    Right        : Position at right-middle of blob
+#    Top          : Position at center-top of blob
+#    Bottom       : Position at center-bottom of blob
+#    TopLeft      : Position at left-top of blob
+#    BottomLeft   : Position at left-bottom of blob
+#    TopRight     : Position at right-top of blob
+#    BottomRight  : Position at right-top of blob
+FakeTrackingModule;objectPosition;Bottom
