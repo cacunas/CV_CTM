@@ -1,2 +1,5 @@
 # Compiled
 *.elc
+*.o
+*.jpeg
+*.user
