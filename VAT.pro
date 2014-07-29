@@ -212,7 +212,9 @@ HEADERS += modules.h \
     DRAW/setReliabilityMap.h \
     MODULES/ReliabilitySegmentationModule.h \
     MODULES/ReliabilityHistogram.h \
-    DRAW/setTemporalVariance.h
+    DRAW/setTemporalVariance.h \
+    MODULES/HMTrackingModule.h \
+    asmOpenCV.h
 SOURCES += ModulesDialog.cpp \
     modules.cpp \
     main.cpp \
@@ -387,7 +389,8 @@ SOURCES += ModulesDialog.cpp \
     DRAW/setReliabilityMap.cpp \
     MODULES/ReliabilitySegmentationModule.cpp \
     MODULES/ReliabilityHistogram.cpp \
-    DRAW/setTemporalVariance.cpp
+    DRAW/setTemporalVariance.cpp \
+    MODULES/HMTrackingModule.cpp
 FORMS += ui/ModulesDialog.ui \
     ui/image_display.ui \
     ui/ImageWindowDisplay.ui \
