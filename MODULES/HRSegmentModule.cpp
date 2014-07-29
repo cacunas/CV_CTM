@@ -21,7 +21,7 @@ bool HRSegmentModule::setParameters(QDomNode& config)
         return true;
     }
 
-    return false;
+    return true;
 }
 
 bool HRSegmentModule::init()
@@ -56,9 +56,9 @@ bool HRSegmentModule::run()
                                m_data->currentImage->height(),
                                QImage::Format_RGB888); //Set Background
         }
-        if(m_data->rFgImage == NULL)
+        if(m_data->fgImage == NULL)
         {
-            m_data->persoImage=
+            m_data->fgImage=
                     new QImage(m_data->currentImage->width(),
                                m_data->currentImage->height(),
                                QImage::Format_RGB888); //Set Background
@@ -359,9 +359,10 @@ void HRSegmentModule::ForeGround()
     Mat element = getStructuringElement(cv::MORPH_CROSS, cv::Size(3,3));
     morphologyEx(binMask, binMask, cv::MORPH_OPEN, element);
 
-    morphologyEx(binMask, binMask, cv::MORPH_CLOSE, element);
+    //morphologyEx(binMask, binMask, cv::MORPH_CLOSE, element);
 
+    //delete img;
     img = new QImage(ASM::cvMatToQImage(binMask));
 
-    m_data->rFgImage = img;
+    m_data->fgImage = img;
 }

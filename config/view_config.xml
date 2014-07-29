@@ -25,7 +25,7 @@
         <Label value="Gray Background"/>
                 <afterModule value="HRSegmentModule"/>
                 <sequence value="true">
-                        <setColouredForeground/>
+                        <setForeground/>
                 </sequence>
     </View>
     <View value="true">
