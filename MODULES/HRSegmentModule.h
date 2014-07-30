@@ -69,10 +69,10 @@ private:
     void DLowIntGrad(QImage* src, QImage* dst);
 
     // ROI dirty hack
-    void HackForeGround();
+    QImage *HackForeGround(QImage *binFore);
 
     //Detect Players
-    void ForeGround();
+    QImage *ForeGround(QImage *img);
 
 };
 
