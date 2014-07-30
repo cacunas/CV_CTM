@@ -72,7 +72,7 @@ bool HRSegmentModule::run()
     this->DLowIntGrad(m_data->currentImage, m_data->persoImage);
 
     m_data->fgImage = this->ForeGround(m_data->bgImage);
-    m_data->fgImage = this->HackForeGround(m_data->fgImage);
+    //this->HackForeGround();
 
     return true;
 }
@@ -308,7 +308,7 @@ void HRSegmentModule::DLowIntGrad(QImage* src, QImage *dst)
                     qGreen(pixel)   >= (A_p[1] + .5*A_t[1]) &&
                     qBlue(pixel)    >= (A_p[2] + .5*A_t[2]) //&&
                     //qGray(pixel)    >= A_t[3]
-                )
+                    )
 
                 dst->setPixel(x,y,src->pixel(x,y));
             else
@@ -317,37 +317,39 @@ void HRSegmentModule::DLowIntGrad(QImage* src, QImage *dst)
     }
 }
 
-QImage* HRSegmentModule::HackForeGround(QImage* binFore)
+void HRSegmentModule::HackForeGround()
 {
     /* This module discard pixels outside the ROI, 'cause the example is dirty */
-    QImage* img = new QImage(*binFore);
+    QImage* img = m_data->fgImage;
     QRgb pixel;
 
-    for (int x=0; x < binFore->width(); x++) {
-        for (int y=0; y < binFore->height(); y++) {
-            pixel = binFore->pixel(x,y);
+    for (int x=0; x < img->width(); x++) {
+        for (int y=0; y < img->height(); y++) {
+            pixel = img->pixel(x,y);
 
-            if (
-                    (y-84) <= (((202-84)/(257-28))*(x-28)) && // L1-2
-                    (y-202) <= (((110-202)/(524-257))*(x-257)) && // L2-3
-                    (y-110) >= (((45-110)/(218-524))*(x-524)) && // L3-4
-                    (y-45) >= (((84-45)/(28-218))*(x-218)) // L4-1
-               )
+            if (!(
+                    //                    (y-84) <= (((202-84)/(257-28))*(x-28)) && // L1-2
+                    //                    (y-202) <= (((110-202)/(524-257))*(x-257)) && // L2-3
+                    //                    (y-110) >= (((45-110)/(218-524))*(x-524)) && // L3-4
+                    //                    (y-45) >= (((84-45)/(28-218))*(x-218)) // L4-1
+                    ((float)y > 70 + 0.5*(float)x) &&
+                    ((float)y < 85 - 0.2*(float)x) &&
+                    ((float)y <  -5 + 0.22*(float)x) &&
+                    ((float)y >  275 - 0.32*(float)x)
+                    ))
             {
-                img->setPixel(x,y,binFore->pixel(x,y));
+                img->setPixel(x,y,pixel);
             } else {
-                img->setPixel(x,y,qRgb(0,0,0));
+                img->setPixel(x,y,qGray(0));
             }
         }
     }
-
-    return img;
 }
 
 QImage* HRSegmentModule::ForeGround(QImage* img)
 {
     /* First, we apply a 3x3 Median Filter to non-grass areas (including players) */
-    //QImage* img = new QImage(*(m_data->bgImage));
+    //QImage* img = new QImage(*img_i);
 
     QRgb pixel;
 
@@ -355,12 +357,11 @@ QImage* HRSegmentModule::ForeGround(QImage* img)
         for (int y=0; y < img->height(); y++) {
             pixel = img->pixel(x,y);
 
-            if ( pixel == qRgb(0,0,0) ) {
+            if (pixel == qRgb(0,0,0)) {
                 img->setPixel(x,y,m_data->currentImage->pixel(x,y));
-            } else {
+            }  else {
                 img->setPixel(x,y,qRgb(0,0,0));
             }
-
         }
     }
 

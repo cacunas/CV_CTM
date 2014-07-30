@@ -4,6 +4,7 @@
 #include <QImage>
 #include <QDir>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <vector>
 #include <cmath>
 #include <QColor>
@@ -69,7 +70,7 @@ private:
     void DLowIntGrad(QImage* src, QImage* dst);
 
     // ROI dirty hack
-    QImage *HackForeGround(QImage *binFore);
+    void HackForeGround();
 
     //Detect Players
     QImage *ForeGround(QImage *img);
