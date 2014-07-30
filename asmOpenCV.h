@@ -93,7 +93,9 @@ inline cv::Mat QImageToCvMat( const QImage &inImage, bool inCloneImageData = tru
 
         QImage   swapped = inImage.rgbSwapped();
 
-        return cv::Mat( swapped.height(), swapped.width(), CV_8UC3, const_cast<uchar*>(swapped.bits()), swapped.bytesPerLine() ).clone();
+        return cv::Mat( swapped.height(), swapped.width(), CV_8UC3,
+                        const_cast<uchar*>(swapped.bits()),
+                        swapped.bytesPerLine() ).clone();
     }
 
         // 8-bit, 1 channel
