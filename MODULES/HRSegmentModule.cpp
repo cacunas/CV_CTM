@@ -38,13 +38,36 @@ bool HRSegmentModule::run()
     QImage* lines  = m_data->persoImage;
     QImage* grass; /* Actually BackGround */
 
+    *currIm = currIm->convertToFormat(QImage::Format_RGB888);
+
+
+//    cout << "DEBUG: currIm->format()=" << currIm->format() << endl;
+//    cout << QImage::Format_ARGB32 << endl;
+//    cout << QImage::Format_ARGB32_Premultiplied << endl;
+//    cout << QImage::Format_ARGB4444_Premultiplied << endl;
+//    cout << QImage::Format_ARGB6666_Premultiplied << endl;
+//    cout << QImage::Format_ARGB8555_Premultiplied << endl;
+//    cout << QImage::Format_ARGB8565_Premultiplied << endl;
+//    cout << QImage::Format_Indexed8 << endl;
+//    cout << QImage::Format_Invalid << endl;
+//    cout << QImage::Format_Mono << endl;
+//    cout << QImage::Format_MonoLSB << endl;
+//    cout << QImage::Format_RGB16 << endl;
+//    cout << QImage::Format_RGB32 << endl;
+//    cout << QImage::Format_RGB444 << endl;
+//    cout << QImage::Format_RGB555 << endl;
+//    cout << QImage::Format_RGB666 << endl;
+//    cout << QImage::Format_RGB888 << endl;
+
+
+
 
     if(this->firstTime)
     {
+        this->firstTime = false;
+
         int w = currIm->width();
         int h = currIm->height();
-
-        this->firstTime = false;
 
         if(bgIm == NULL)
             bgIm = new QImage(w, h, QImage::Format_RGB888);
@@ -185,6 +208,7 @@ void HRSegmentModule::GrassClassifier(const QImage& currIm, QImage& grass)
     QImage myCurrIm = QImage(currIm);
     int w = myCurrIm.width();
     int h = myCurrIm.height();
+    delete &grass;
     grass = QImage(w, h, myCurrIm.format());
 
     /* Histograms for each channel:
