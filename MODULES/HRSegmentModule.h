@@ -45,8 +45,11 @@ private:
     float A_p[4];// histogram intensity peaks (R,G,B,Gray)
     float A_t[4];// intensity thresholds (R,G,B,Gray)
 
+    // Convert ARGB QImage to Index8 QImage
+    //QImage ARGB2RGB(const QImage argb);
+
     //Calculates Intensity Histograms per channel
-    vector<hist> calculateHistograms(const QImage &img);
+    vector<hist> calculateHistograms(const QImage img);
 
     //Calculates first and second statistical moments of the intesity histograms
     vector<float> calculateMoments(vector<hist> channels);
@@ -58,22 +61,22 @@ private:
     void calculateThresholds(vector<hist> ch);
 
     //Store grass area of the image on bgImage using a binary classifier
-    void GrassClassifier(const QImage& currIm, QImage& grass);
+    QImage GrassClassifier(const QImage currIm);
 
     //Get the line on the grass selection usign Hough Transform
-    void Line_detect(const QImage& currIm, QImage& lineIm);
+    QImage Line_detect(const QImage currIm);
 
     //Aplly a filter
-    void ApplyFilter(const QImage& f_in, QImage& f_out);
+    QImage ApplyFilter(const QImage f_in);
 
     //Discard Low Intensity and Low Gradient pixels
-    void DLowIntGrad(const QImage& src, QImage& dst);
+    QImage DLowIntGrad(const QImage src);
 
     // ROI dirty hack
     void HackForeGround();
 
     //Detect Players
-    void ForeGround(const QImage& curr, const QImage &bg, QImage& fg);
+    QImage ForeGround(const QImage curr, const QImage bg);
 
 };
 

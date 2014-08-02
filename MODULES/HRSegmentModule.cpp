@@ -31,67 +31,33 @@ bool HRSegmentModule::init()
 
 bool HRSegmentModule::run()
 {
+    // Current frame from the datapool
     QImage* currIm = m_data->currentImage;
-    QImage* grayIm = m_data->grayImage;
-    QImage* bgIm   = m_data->bgImage;
-    QImage* fgIm   = m_data->fgImage;
-    QImage* lines  = m_data->persoImage;
-    QImage* grass; /* Actually BackGround */
 
-    *currIm = currIm->convertToFormat(QImage::Format_RGB888);
+    // To avoid problems of formats, converto to RGB888
+    QImage aux = currIm->convertToFormat(QImage::Format_RGB888);
 
-
-//    cout << "DEBUG: currIm->format()=" << currIm->format() << endl;
-//    cout << QImage::Format_ARGB32 << endl;
-//    cout << QImage::Format_ARGB32_Premultiplied << endl;
-//    cout << QImage::Format_ARGB4444_Premultiplied << endl;
-//    cout << QImage::Format_ARGB6666_Premultiplied << endl;
-//    cout << QImage::Format_ARGB8555_Premultiplied << endl;
-//    cout << QImage::Format_ARGB8565_Premultiplied << endl;
-//    cout << QImage::Format_Indexed8 << endl;
-//    cout << QImage::Format_Invalid << endl;
-//    cout << QImage::Format_Mono << endl;
-//    cout << QImage::Format_MonoLSB << endl;
-//    cout << QImage::Format_RGB16 << endl;
-//    cout << QImage::Format_RGB32 << endl;
-//    cout << QImage::Format_RGB444 << endl;
-//    cout << QImage::Format_RGB555 << endl;
-//    cout << QImage::Format_RGB666 << endl;
-//    cout << QImage::Format_RGB888 << endl;
-
-
-
+    // Local variables to results
+    QImage grass    = this->GrassClassifier(aux);
+    QImage lines    = this->Line_detect(aux);
+    QImage fgIm     = this->ForeGround(aux, grass);
+    QImage better   = this->DLowIntGrad(aux);
 
     if(this->firstTime)
     {
         this->firstTime = false;
-
-        int w = currIm->width();
-        int h = currIm->height();
-
-        if(bgIm == NULL)
-            bgIm = new QImage(w, h, QImage::Format_RGB888);
-
-        if(grayIm == NULL)
-            grayIm= new QImage(w, h, QImage::Format_Indexed8);
-
-        if(lines == NULL)
-            lines = new QImage(w, h, QImage::Format_RGB888);
-
-        if(fgIm == NULL)
-            fgIm = new QImage(w, h, QImage::Format_RGB888);
+    } else {
+        delete m_data->bgImage;
+        delete m_data->fgImage;
+        delete m_data->persoImage;
+        delete m_data->grayImage;
     }
 
-
-    this->GrassClassifier(*currIm, *grass);
-
-    bgIm = grass;
-
-    this->Line_detect(*currIm, *lines);
-    this->DLowIntGrad(*currIm, *lines);
-
-    this->ForeGround(*currIm, *bgIm, *fgIm);
-    //this->HackForeGround();
+    // Copy local results to new memory space, so is not deleted between frames
+    m_data->bgImage = new QImage(grass);
+    m_data->fgImage = new QImage(fgIm);
+    m_data->persoImage = new QImage(better);
+    m_data->grayImage = new QImage(lines);
 
     return true;
 }
@@ -101,7 +67,15 @@ bool HRSegmentModule::updateParameters()
     return true;
 }
 
-vector<hist> HRSegmentModule::calculateHistograms(const QImage& img)
+/**
+ * @brief HRSegmentModule::calculateHistograms: Calculates Intensity histograms
+ * of an image (1 per channel), and stores it on a std::vector.
+ * @param img: Input Image (format: QImage::Format_RGB888)
+ * @return: std::vector< std::vector<int> > with the intensity histograms
+ * (4 histograms: red, blue, green and gray, each with 256 bins, where a bin is
+ * a given intensity).
+ */
+vector<hist> HRSegmentModule::calculateHistograms(const QImage img)
 {
     vector<hist> channels(4);
 
@@ -123,6 +97,15 @@ vector<hist> HRSegmentModule::calculateHistograms(const QImage& img)
     return channels;
 }
 
+/**
+ * @brief HRSegmentModule::calculateMoments: Calculates first and second
+ * statistical moments of the intensity histograms, and return a std::vector
+ * with those moments. Is used for the calculation of peaks and thresholds for
+ * the grass classifier.
+ * @param channels: Intensity histograms (1 per channel).
+ * @return: return a std:vector with the first and second statistical moments
+ * for each channel (in total, 8 values).
+ */
 vector<float> HRSegmentModule::calculateMoments(vector<hist> channels) {
     vector<float> fMoments(4,0.);
     vector<float> sMoments(4,0.);
@@ -150,6 +133,11 @@ vector<float> HRSegmentModule::calculateMoments(vector<hist> channels) {
     return moments;
 }
 
+/**
+ * @brief HRSegmentModule::calculatePeaks: Calculate peak intensity for each
+ * channel, and stores those peaks int the private member A_p
+ * @param channels: Intensity histograms (1 per channel).
+ */
 void HRSegmentModule::calculatePeaks(vector<hist> channels)
 {
     vector<float> peaks(4,0);
@@ -189,6 +177,13 @@ void HRSegmentModule::calculatePeaks(vector<hist> channels)
         A_p[ch] = peaks[ch];
 }
 
+/**
+ * @brief HRSegmentModule::calculateThresholds: Calculate thresholds for grass
+ * clasifier
+ * @param ch: std::vector< std::vector<int> > ch, contains histograms (1 per
+ * channel) of intensity (from frame). Is used to calculate the thresholds
+ * (stored) int the private member A_t
+ */
 void HRSegmentModule::calculateThresholds(vector<hist> ch) {
     vector<float> moments = this->calculateMoments(ch);
 
@@ -198,18 +193,21 @@ void HRSegmentModule::calculateThresholds(vector<hist> ch) {
     A_t[3] = A_p[3] + beta * sqrt(moments[7]-moments[3]*moments[3]);
 }
 
-/*
- * @currIm : Frame image
- * @grass : (empty) QImage. Stor image with only grass pixels
+/**
+ * @brief HRSegmentModule::GrassClassifier: Takes current frame as input, and
+ * returns an image that contains only pixels correspondet to field (grass)
+ * pixels
+ * @param currIm: Current frame image (format: QImage::Format_RGB888)
+ * @return: QImage. Stor image with only grass pixels
  */
-void HRSegmentModule::GrassClassifier(const QImage& currIm, QImage& grass)
+QImage HRSegmentModule::GrassClassifier(const QImage currIm)
 {
     // Copy on temporary memory, for safety
     QImage myCurrIm = QImage(currIm);
     int w = myCurrIm.width();
     int h = myCurrIm.height();
-    delete &grass;
-    grass = QImage(w, h, myCurrIm.format());
+
+    QImage grass(w, h, QImage::Format_RGB888);
 
     /* Histograms for each channel:
      * 0 - red
@@ -248,54 +246,68 @@ void HRSegmentModule::GrassClassifier(const QImage& currIm, QImage& grass)
                 grass.setPixel(x,y,qRgb(0,0,0));
         }
     }
+
+    return grass;
 }
 
-void HRSegmentModule::Line_detect(const QImage& currIm, QImage& lineIm)
+/**
+ * @brief HRSegmentModule::Line_detect Detects field lines over the present
+ * frame
+ * @param currIm: current frame (in RGB888 format)
+ * @return: return gray image of posible lines (format Index8)
+ */
+QImage HRSegmentModule::Line_detect(const QImage currIm)
 {
     // Initialized as gray image format
-    lineIm = QImage(currIm.convertToFormat(QImage::Format_Indexed8));
+    QImage aux = currIm.convertToFormat(QImage::Format_Indexed8);
 
-    this->ApplyFilter(lineIm, lineIm);
+    return this->ApplyFilter(aux);
 }
 
-void HRSegmentModule::ApplyFilter(const QImage& f_in, QImage& f_out)
+/**
+ * @brief HRSegmentModule::ApplyFilter Appplies custom box filter (normalized)
+ * over gray image (Format_Indexed8)
+ * @param f_in: input image (format: QImage::Format_Indexed8)
+ * @return: returns filtered image, in format QImage::Format_Indexed8
+*/
+QImage HRSegmentModule::ApplyFilter(const QImage f_in)
 {
-    cout << "DEBUG:\t f_in.format() " << f_in.format() << endl;
-    cout << "DEBUG:\t Format_Indexed8 " << QImage::Format_Indexed8 << endl;
+    QImage f_out = QImage(f_in.size(), f_in.format());
 
-    //int w = f_in->width();
-    //int h = f_in->height();
+//    cout << "DEBUG:\t f_in.format() " << f_in.format() << endl;
+//    cout << "DEBUG:\t Format_Indexed8 " << QImage::Format_Indexed8 << endl;
 
     cv::Mat kernel = (Mat_<double>(3,3) << -2, 1, -2, 1, 4, 1, -2, 1, -2);
-    //cv::Mat f(h, w, CV_8UC1);
 
     Mat f = ASM::QImageToCvMat(f_in);
-
-    //memcpy(f.data, fin_p, h*bl);
 
     filter2D(f, f, -1 , kernel, Point( -1, -1 ), 0, BORDER_DEFAULT );
 
     f_out = ASM::cvMatToQImage(f);
 
-    //memcpy(fout_p, f.data, h*bl);
+    return f_out;
 }
 
-void HRSegmentModule::DLowIntGrad(const QImage& src, QImage& dst)
+/**
+ * @brief HRSegmentModule::DLowIntGrad Discards low gradient and low contrast
+ * pixels
+ * @param src : Input image, in format QImage::Format_RGB888
+ * @return: Return image with low gradient and low contrast discarded (in format
+ * QImage::Format_RGB888 also
+ */
+QImage HRSegmentModule::DLowIntGrad(const QImage src)
 {
     if (src.isNull())
     {
-        AppendToLog("Error: src NULL\n in DLowIntGrad(src,dst)\n");
-        return;
-    } else if (src.format() != QImage::Format_Indexed8) {
-        AppendToLog("Error: src not gray\n");
-        return;
+        AppendToLog("Error: src NULL\n in DLowIntGrad(src)\n");
+        exit(-1);
     }
 
     // Stores current pixel value when reading the image
     QRgb pixel;
 
     QImage mySrc = QImage(src);
-    dst = QImage(mySrc.size(), mySrc.format());
+    QImage dst = QImage(mySrc.size(), mySrc.format());
 
     for (int x=0; x < mySrc.width(); x++)
     {
@@ -315,6 +327,8 @@ void HRSegmentModule::DLowIntGrad(const QImage& src, QImage& dst)
                 dst.setPixel(x,y,qRgb(0,0,0));
         }
     }
+
+    return dst;
 }
 
 void HRSegmentModule::HackForeGround()
@@ -347,16 +361,24 @@ void HRSegmentModule::HackForeGround()
     }
 }
 
-void HRSegmentModule::ForeGround(const QImage& curr, const QImage& bg, QImage& fg)
+/**
+ * @brief HRSegmentModule::ForeGround Calculates Foreground
+ * (posible player blobs) using the current frame (in colors) and a background
+ * (grass)
+ * @param curr: Current frame (format QImage::Format_RGB888)
+ * @param bg : Grass area (format QImage::Format_RGB888)
+ * @return return binary image for player blob extraction
+ * (format: QImage::Format_RGB888)
+ */
+QImage HRSegmentModule::ForeGround(const QImage curr, const QImage bg)
 {
     if (curr.isNull())
     {
         AppendToLog("Error:\t at ForeGround(curr, bg, fg)\n curr NULL\n");
-        return;
+        exit(-1);
     }
 
     /* First, we apply a 3x3 Median Filter to non-grass areas (including players) */
-    //QImage* img = new QImage(*img_i);
     QImage myIm = QImage(curr);
 
     QRgb pixelIm, pixelBg;
@@ -400,5 +422,5 @@ void HRSegmentModule::ForeGround(const QImage& curr, const QImage& bg, QImage& f
     morphologyEx(binMask, binMask, cv::MORPH_CLOSE, element);
 
     //delete img;
-    fg = QImage(ASM::cvMatToQImage(binMask));
+    return QImage(ASM::cvMatToQImage(binMask));
 }
