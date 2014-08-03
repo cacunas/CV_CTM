@@ -5,6 +5,7 @@
 *.user
 *.jpg
 *.mpg
+*.autosave
 Makefile
 VAT
 moc_CameraThread.cpp
