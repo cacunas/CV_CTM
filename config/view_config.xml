@@ -14,7 +14,7 @@
         <Row value="0"/>
         <Column value="1"/>
         <Label value="Grass"/>
-                <afterModule value="HRSegmentModule"/>
+                <afterModule value="HMTrackingModule"/>
                 <sequence value="true">
                         <setBackground/>
                 </sequence>
@@ -23,7 +23,7 @@
         <Row value="1"/>
         <Column value="0"/>
         <Label value="ForeGround (Blobs)"/>
-                <afterModule value="HRSegmentModule"/>
+                <afterModule value="HMTrackingModule"/>
                 <sequence value="true">
                         <setForeground/>
                 </sequence>
@@ -32,7 +32,7 @@
         <Row value="1"/>
         <Column value="1"/>
         <Label value="Lines"/>
-                <afterModule value="HRSegmentModule"/>
+                <afterModule value="HMTrackingModule"/>
                 <sequence value="true">
                         <setPersonality/>
                 </sequence>

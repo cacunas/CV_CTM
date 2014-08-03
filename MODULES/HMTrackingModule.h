@@ -1,5 +1,5 @@
-#ifndef HRSEGMENTMODULE_H
-#define HRSEGMENTMODULE_H
+#ifndef HMTRACKINGMODULE_H
+#define HMTRACKINGMODULE_H
 
 #include <QImage>
 #include <QDir>
@@ -21,11 +21,11 @@ typedef std::vector<int> hist;
 
 using namespace std;
 
-class HRSegmentModule : public ModuleInterface
+class HMTrackingModule : public ModuleInterface
 {
 public:
-    HRSegmentModule(Datapool* i_data);
-    ~HRSegmentModule();
+    HMTrackingModule(Datapool* i_data);
+    ~HMTrackingModule();
 
     //Set module configuration parameters
     bool setParameters(QDomNode& config);
@@ -86,4 +86,4 @@ private:
 
 };
 
-#endif // HRSEGMENTMODULE_H
+#endif // HMTRACKINGMODULE_H

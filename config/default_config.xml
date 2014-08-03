@@ -58,13 +58,13 @@
     <saveCurrent value="yes" />
 </AcquisitionModule>
 
-<HRSegmentModule>
+<HMTrackingModule>
 <!--   <startFrame value="200" />
    <subDirectories value="no" />
    <videoDirectory value="VideoFiles" />
    <defaultMillisecs value="40" />
    <saveCurrent value="yes" />-->
-</HRSegmentModule>
+</HMTrackingModule>
 
 
 </MODULE_PARAMETERS>

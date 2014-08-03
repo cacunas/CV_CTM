@@ -1,21 +1,21 @@
-#include "HRSegmentModule.h"
+#include "HMTrackingModule.h"
 
 using namespace std;
 using namespace cv;
 
-HRSegmentModule::HRSegmentModule(Datapool* i_data) :
+HMTrackingModule::HMTrackingModule(Datapool* i_data) :
     ModuleInterface(i_data) {
     this->firstTime = true;
     this->alpha = 0.1;
     this->beta = 0.75;
 }
 
-HRSegmentModule::~HRSegmentModule()
+HMTrackingModule::~HMTrackingModule()
 {
 
 }
 
-bool HRSegmentModule::setParameters(QDomNode& config)
+bool HMTrackingModule::setParameters(QDomNode& config)
 {
     if(config.isNull()) {
         return true;
@@ -24,12 +24,12 @@ bool HRSegmentModule::setParameters(QDomNode& config)
     return true;
 }
 
-bool HRSegmentModule::init()
+bool HMTrackingModule::init()
 {
     return true;
 }
 
-bool HRSegmentModule::run()
+bool HMTrackingModule::run()
 {
     // Current frame from the datapool
     QImage& currIm = *(m_data->currentImage);
@@ -65,20 +65,20 @@ bool HRSegmentModule::run()
     return true;
 }
 
-bool HRSegmentModule::updateParameters()
+bool HMTrackingModule::updateParameters()
 {
     return true;
 }
 
 /**
- * @brief HRSegmentModule::calculateHistograms: Calculates Intensity histograms
+ * @brief HMTrackingModule::calculateHistograms: Calculates Intensity histograms
  * of an image (1 per channel), and stores it on a std::vector.
  * @param img: Input Image (format: QImage::Format_RGB888)
  * @return: std::vector< std::vector<int> > with the intensity histograms
  * (4 histograms: red, blue, green and gray, each with 256 bins, where a bin is
  * a given intensity).
  */
-vector<hist> HRSegmentModule::calculateHistograms(const QImage img)
+vector<hist> HMTrackingModule::calculateHistograms(const QImage img)
 {
     vector<hist> channels(4);
 
@@ -101,7 +101,7 @@ vector<hist> HRSegmentModule::calculateHistograms(const QImage img)
 }
 
 /**
- * @brief HRSegmentModule::calculateMoments: Calculates first and second
+ * @brief HMTrackingModule::calculateMoments: Calculates first and second
  * statistical moments of the intensity histograms, and return a std::vector
  * with those moments. Is used for the calculation of peaks and thresholds for
  * the grass classifier.
@@ -109,7 +109,7 @@ vector<hist> HRSegmentModule::calculateHistograms(const QImage img)
  * @return: return a std:vector with the first and second statistical moments
  * for each channel (in total, 8 values).
  */
-vector<float> HRSegmentModule::calculateMoments(vector<hist> channels) {
+vector<float> HMTrackingModule::calculateMoments(vector<hist> channels) {
     vector<float> fMoments(4,0.);
     vector<float> sMoments(4,0.);
 
@@ -137,11 +137,11 @@ vector<float> HRSegmentModule::calculateMoments(vector<hist> channels) {
 }
 
 /**
- * @brief HRSegmentModule::calculatePeaks: Calculate peak intensity for each
+ * @brief HMTrackingModule::calculatePeaks: Calculate peak intensity for each
  * channel, and stores those peaks int the private member A_p
  * @param channels: Intensity histograms (1 per channel).
  */
-void HRSegmentModule::calculatePeaks(vector<hist> channels)
+void HMTrackingModule::calculatePeaks(vector<hist> channels)
 {
     vector<float> peaks(4,0);
 
@@ -181,13 +181,13 @@ void HRSegmentModule::calculatePeaks(vector<hist> channels)
 }
 
 /**
- * @brief HRSegmentModule::calculateThresholds: Calculate thresholds for grass
+ * @brief HMTrackingModule::calculateThresholds: Calculate thresholds for grass
  * clasifier
  * @param ch: std::vector< std::vector<int> > ch, contains histograms (1 per
  * channel) of intensity (from frame). Is used to calculate the thresholds
  * (stored) int the private member A_t
  */
-void HRSegmentModule::calculateThresholds(vector<hist> ch) {
+void HMTrackingModule::calculateThresholds(vector<hist> ch) {
     vector<float> moments = this->calculateMoments(ch);
 
     for (int ch=0; ch<3; ch++)
@@ -197,13 +197,13 @@ void HRSegmentModule::calculateThresholds(vector<hist> ch) {
 }
 
 /**
- * @brief HRSegmentModule::GrassClassifier: Takes current frame as input, and
+ * @brief HMTrackingModule::GrassClassifier: Takes current frame as input, and
  * returns an image that contains only pixels correspondet to field (grass)
  * pixels
  * @param currIm: Current frame image (format: QImage::Format_RGB888)
  * @return: QImage. Stor image with only grass pixels
  */
-QImage HRSegmentModule::GrassClassifier(const QImage currIm)
+QImage HMTrackingModule::GrassClassifier(const QImage currIm)
 {
     // Copy on temporary memory, for safety
     QImage myCurrIm = QImage(currIm);
@@ -254,12 +254,12 @@ QImage HRSegmentModule::GrassClassifier(const QImage currIm)
 }
 
 /**
- * @brief HRSegmentModule::Line_detect Detects field lines over the present
+ * @brief HMTrackingModule::Line_detect Detects field lines over the present
  * frame
  * @param currIm: current frame (in RGB888 format)
  * @return: return gray image of posible lines (format Index8)
  */
-QImage HRSegmentModule::Line_detect(const QImage currIm)
+QImage HMTrackingModule::Line_detect(const QImage currIm)
 {
     // Initialized as gray image format
     QImage aux = currIm.convertToFormat(QImage::Format_Indexed8);
@@ -268,12 +268,12 @@ QImage HRSegmentModule::Line_detect(const QImage currIm)
 }
 
 /**
- * @brief HRSegmentModule::ApplyFilter Appplies custom box filter (normalized)
+ * @brief HMTrackingModule::ApplyFilter Appplies custom box filter (normalized)
  * over gray image (Format_Indexed8)
  * @param f_in: input image (format: QImage::Format_Indexed8)
  * @return: returns filtered image, in format QImage::Format_Indexed8
 */
-QImage HRSegmentModule::ApplyFilter(const QImage f_in)
+QImage HMTrackingModule::ApplyFilter(const QImage f_in)
 {
     QImage f_out = QImage(f_in.size(), f_in.format());
 
@@ -292,13 +292,13 @@ QImage HRSegmentModule::ApplyFilter(const QImage f_in)
 }
 
 /**
- * @brief HRSegmentModule::DLowIntGrad Discards low gradient and low contrast
+ * @brief HMTrackingModule::DLowIntGrad Discards low gradient and low contrast
  * pixels
  * @param src : Input image, in format QImage::Format_RGB888
  * @return: Return image with low gradient and low contrast discarded (in format
  * QImage::Format_RGB888 also
  */
-QImage HRSegmentModule::DLowIntGrad(const QImage src)
+QImage HMTrackingModule::DLowIntGrad(const QImage src)
 {
     if (src.isNull())
     {
@@ -335,10 +335,12 @@ QImage HRSegmentModule::DLowIntGrad(const QImage src)
 }
 
 /**
- * @brief HRSegmentModule::HackROI
- * @param currIm
+ * @brief HMTrackingModule::HackROI: Select interest area (example has grass
+ * outside field, so is a bad example).
+ * @param currIm Current frame, takes it and save the same image but with all
+ * pixels outside interest area in black (in this->ROI_mask)
  */
-void HRSegmentModule::HackROI(const QImage currIm)
+void HMTrackingModule::HackROI(const QImage currIm)
 {
     /* This module discard pixels outside the ROI, 'cause the example is dirty */
     ROI_mask = QImage(currIm);
@@ -373,7 +375,7 @@ void HRSegmentModule::HackROI(const QImage currIm)
 }
 
 /**
- * @brief HRSegmentModule::ForeGround Calculates Foreground
+ * @brief HMTrackingModule::ForeGround Calculates Foreground
  * (posible player blobs) using the current frame (in colors) and a background
  * (grass)
  * @param curr: Current frame (format QImage::Format_RGB888)
@@ -381,7 +383,7 @@ void HRSegmentModule::HackROI(const QImage currIm)
  * @return return binary image for player blob extraction
  * (format: QImage::Format_RGB888)
  */
-QImage HRSegmentModule::ForeGround(const QImage curr, const QImage bg)
+QImage HMTrackingModule::ForeGround(const QImage curr, const QImage bg)
 {
     if (curr.isNull())
     {
@@ -431,13 +433,10 @@ QImage HRSegmentModule::ForeGround(const QImage curr, const QImage bg)
     Mat element = getStructuringElement(cv::MORPH_CROSS, cv::Size(3,3));
     morphologyEx(binMask, binMask, cv::MORPH_OPEN, element);
 
-    morphologyEx(binMask, binMask, cv::MORPH_CLOSE, element);
-
-    //delete img;
-    return QImage(ASM::cvMatToQImage(binMask));
+    return ASM::cvMatToQImage(binMask);
 }
 
-void HRSegmentModule::generateBlobs()
+void HMTrackingModule::generateBlobs()
 {
 
 }

@@ -34,7 +34,7 @@
 #include "MODULES/PlayFieldDetectionModule.h"
 #include "MODULES/CameraCalibrationModule.h"
 #include "MODULES/ReliabilityHistogram.h"
-#include "MODULES/HRSegmentModule.h"
+#include "MODULES/HMTrackingModule.h"
 #include "MODULES/HRdummy.h"
 
 //2. Add the module, according to defined class name in the corresponding header file
@@ -72,7 +72,7 @@ ADD_MODULE(TemporalVarianceBGModule)
 ADD_MODULE(PlayFieldDetectionModule)
 ADD_MODULE(CameraCalibrationModule)
 ADD_MODULE(ReliabilityHistogram)
-ADD_MODULE(HRSegmentModule)
+ADD_MODULE(HMTrackingModule)
 ADD_MODULE(HRdummy)
 
 //3. Register module: sets name, type (if provided), and associates name to list.
@@ -110,6 +110,6 @@ void VideoAnalysis::setAvailableModules() {
     REGISTER_MODULE(PlayFieldDetectionModule, SEGMENTATION);
     REGISTER_MODULE(CameraCalibrationModule, OTHER );
     REGISTER_MODULE(ReliabilityHistogram, OTHER );
-    REGISTER_MODULE(HRSegmentModule, SEGMENTATION);
+    REGISTER_MODULE(HMTrackingModule, SEGMENTATION);
     REGISTER_MODULE(HRdummy, OTHER);
 }
