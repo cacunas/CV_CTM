@@ -44,6 +44,7 @@ private:
     float alpha, beta;
     float A_p[4];// histogram intensity peaks (R,G,B,Gray)
     float A_t[4];// intensity thresholds (R,G,B,Gray)
+    QImage ROI_mask;// Dirty ROI trick
 
     // Convert ARGB QImage to Index8 QImage
     //QImage ARGB2RGB(const QImage argb);
@@ -73,10 +74,15 @@ private:
     QImage DLowIntGrad(const QImage src);
 
     // ROI dirty hack
-    void HackForeGround();
+    void HackROI(const QImage currIm);
 
     //Detect Players
     QImage ForeGround(const QImage curr, const QImage bg);
+
+    /**
+     * @brief generateBlobs: generate blobs.
+     */
+    void generateBlobs();
 
 };
 

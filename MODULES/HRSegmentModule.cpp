@@ -32,16 +32,19 @@ bool HRSegmentModule::init()
 bool HRSegmentModule::run()
 {
     // Current frame from the datapool
-    QImage* currIm = m_data->currentImage;
+    QImage& currIm = *(m_data->currentImage);
+    currIm = currIm.convertToFormat(QImage::Format_RGB888);
+    this->HackROI(currIm);
 
     // To avoid problems of formats, converto to RGB888
-    QImage aux = currIm->convertToFormat(QImage::Format_RGB888);
+    //QImage aux = currIm.convertToFormat(QImage::Format_RGB888);
+    //this->HackROI(aux);
 
     // Local variables to results
-    QImage grass    = this->GrassClassifier(aux);
-    QImage lines    = this->Line_detect(aux);
-    QImage fgIm     = this->ForeGround(aux, grass);
-    QImage better   = this->DLowIntGrad(aux);
+    QImage grass    = this->GrassClassifier(currIm);
+    QImage lines    = this->Line_detect(ROI_mask);
+    QImage better   = this->DLowIntGrad(ROI_mask);
+    QImage fgIm     = this->ForeGround(ROI_mask, grass);
 
     if(this->firstTime)
     {
@@ -331,32 +334,40 @@ QImage HRSegmentModule::DLowIntGrad(const QImage src)
     return dst;
 }
 
-void HRSegmentModule::HackForeGround()
+/**
+ * @brief HRSegmentModule::HackROI
+ * @param currIm
+ */
+void HRSegmentModule::HackROI(const QImage currIm)
 {
     /* This module discard pixels outside the ROI, 'cause the example is dirty */
-    QImage* img = m_data->fgImage;
+    ROI_mask = QImage(currIm);
     QRgb pixel;
 
-    for (int x=0; x < img->width(); x++)
+    int w = ROI_mask.width();
+    int h = ROI_mask.height();
+
+    double m_AB = (203.-81.)/(254.-26.);
+    double m_BC = (109.-203.)/(524.-254.);
+    double m_CD = (45.-109.)/(217.-524.);
+    double m_DA = (81.-45.)/(26.-217.);
+
+    for (int x=0; x < w; x++)
     {
-        for (int y=0; y < img->height(); y++)
+        for (int y=0; y < h; y++)
         {
-            pixel = img->pixel(x,y);
+            pixel = ROI_mask.pixel(x,y);
 
             bool condition =
-//                    (y-84) <= (((202-84)/(257-28))*(x-28)) && // L1-2
-//                    (y-202) <= (((110-202)/(524-257))*(x-257)) && // L2-3
-//                    (y-110) >= (((45-110)/(218-524))*(x-524)) && // L3-4
-//                    (y-45) >= (((84-45)/(28-218))*(x-218)) // L4-1
-                    ((float)y > 70 + 0.5*(float)x) &&
-                    ((float)y < 85 - 0.2*(float)x) &&
-                    ((float)y <  -5 + 0.22*(float)x) &&
-                    ((float)y >  275 - 0.32*(float)x);
+                    ( (float)(y-81) <= m_AB*(x-26) ) &&
+                    ( (float)(y-203) <= m_BC*(x-254) ) &&
+                    ( (float)(y-109) >= m_CD*(x-524) ) &&
+                    ( (float)(y-45) >= m_DA*(x-217) );
 
-            if (!condition)
-                img->setPixel(x,y,pixel);
+            if (condition)
+                ROI_mask.setPixel(x,y,pixel);
             else
-                img->setPixel(x,y,qGray(0));
+                ROI_mask.setPixel(x,y,qRgb(0,0,0));
         }
     }
 }
@@ -383,16 +394,17 @@ QImage HRSegmentModule::ForeGround(const QImage curr, const QImage bg)
 
     QRgb pixelIm, pixelBg;
 
-    for (int x=0; x < myIm.width(); x++) {
-        for (int y=0; y < myIm.height(); y++) {
-            pixelIm = myIm.pixel(x,y);
+    for (int x=0; x < curr.width(); x++)
+    {
+        for (int y=0; y < curr.height(); y++)
+        {
+            pixelIm = curr.pixel(x,y);
             pixelBg = bg.pixel(x,y);
 
-            if (pixelBg == qRgb(0,0,0)) {
+            if ( (pixelBg == qRgb(0,0,0)) && (pixelIm != qRgb(0,0,0)) )
                 myIm.setPixel(x,y,pixelIm);
-            }  else {
+            else
                 myIm.setPixel(x,y,qRgb(0,0,0));
-            }
         }
     }
 
@@ -423,4 +435,9 @@ QImage HRSegmentModule::ForeGround(const QImage curr, const QImage bg)
 
     //delete img;
     return QImage(ASM::cvMatToQImage(binMask));
+}
+
+void HRSegmentModule::generateBlobs()
+{
+
 }
