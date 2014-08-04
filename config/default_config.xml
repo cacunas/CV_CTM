@@ -68,7 +68,7 @@
     <!-- Rate of pixels to horizontally and vertically ignore from image borders -->
     <IgnoreBorderRate value="0.05" />
     <!--IgnoreBorderRate value="0" /-->
-    <DeleteInForeground value="true"/>
+    <DeleteInForeground value="false"/>
 </BlobFilteringModule>
 
 </MODULE_PARAMETERS>

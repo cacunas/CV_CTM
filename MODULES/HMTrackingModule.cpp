@@ -33,14 +33,11 @@ bool HMTrackingModule::run()
 {
     // Current frame from the datapool
     QImage& currIm = *(m_data->currentImage);
+    // To avoid problems of formats, converto to RGB888
     currIm = currIm.convertToFormat(QImage::Format_RGB888);
     this->HackROI(currIm);
 
-    // To avoid problems of formats, converto to RGB888
-    //QImage aux = currIm.convertToFormat(QImage::Format_RGB888);
-    //this->HackROI(aux);
-
-    // Local variables to results
+    // Local variables to store results
     QImage grass    = this->GrassClassifier(currIm);
     QImage lines    = this->Line_detect(ROI_mask);
     QImage better   = this->DLowIntGrad(ROI_mask);
@@ -277,9 +274,6 @@ QImage HMTrackingModule::ApplyFilter(const QImage f_in)
 {
     QImage f_out = QImage(f_in.size(), f_in.format());
 
-//    cout << "DEBUG:\t f_in.format() " << f_in.format() << endl;
-//    cout << "DEBUG:\t Format_Indexed8 " << QImage::Format_Indexed8 << endl;
-
     cv::Mat kernel = (Mat_<double>(3,3) << -2, 1, -2, 1, 4, 1, -2, 1, -2);
 
     Mat f = ASM::QImageToCvMat(f_in);
@@ -387,12 +381,12 @@ QImage HMTrackingModule::ForeGround(const QImage curr, const QImage bg)
 {
     if (curr.isNull())
     {
-        AppendToLog("Error:\t at ForeGround(curr, bg, fg)\n curr NULL\n");
+        AppendToLog("Error:\t at ForeGround(curr, bg)\n curr NULL\n");
         exit(-1);
     }
 
     /* First, we apply a 3x3 Median Filter to non-grass areas (including players) */
-    QImage myIm = QImage(curr);
+    QImage myIm = QImage(curr.size(), curr.format());
 
     QRgb pixelIm, pixelBg;
 
@@ -410,30 +404,23 @@ QImage HMTrackingModule::ForeGround(const QImage curr, const QImage bg)
         }
     }
 
+    myIm = myIm.convertToFormat(QImage::Format_Indexed8);
+
     Mat src = ASM::QImageToCvMat(myIm);
-    Mat dst;
+    //Mat dst;
 
     // Apply median filter
-    medianBlur ( src, dst, 3 );
-
-    // gray version
-    Mat grayIm (dst.size(), CV_8UC1);
-
-    // first convert the image to grayscale
-    cvtColor (dst, grayIm, CV_RGB2GRAY);
-
-    // Binary mask
-    Mat binMask (grayIm.size(), grayIm.type());
+    medianBlur ( src, src, 3 );
 
     // then adjust the threshold to actually make it binary
-    threshold(grayIm, binMask, 100, 255, CV_THRESH_BINARY);
-
+    threshold(src, src, 100, 255, CV_THRESH_BINARY);
 
     // Apply aperture
     Mat element = getStructuringElement(cv::MORPH_CROSS, cv::Size(3,3));
-    morphologyEx(binMask, binMask, cv::MORPH_OPEN, element);
+    morphologyEx(src, src, cv::MORPH_OPEN, element);
 
-    return ASM::cvMatToQImage(binMask);
+    myIm = ASM::cvMatToQImage(src);
+    return myIm;
 }
 
 void HMTrackingModule::generateBlobs()

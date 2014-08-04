@@ -23,7 +23,7 @@
         <Row value="1"/>
         <Column value="0"/>
         <Label value="ForeGround (Blobs)"/>
-                <afterModule value="BlobFilteringModule"/>
+                <afterModule value="ConnectedComponentsRLEModule"/>
                 <sequence value="true">
                         <setBlobs/>
                 </sequence>
@@ -32,7 +32,7 @@
         <Row value="1"/>
         <Column value="1"/>
         <Label value="Lines"/>
-                <afterModule value="HMTrackingModule"/>
+                <afterModule value="BlobFilteringModule"/>
                 <sequence value="true">
                         <setPersonality/>
                 </sequence>
