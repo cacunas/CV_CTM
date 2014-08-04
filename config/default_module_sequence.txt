@@ -1,4 +1,3 @@
-AcquisitionModule
 #BackgroundInitializationModule
 #PlayFieldDetectionModule
 #segmentationModule
@@ -11,6 +10,7 @@ AcquisitionModule
 #ObjectFilteringModule
 #HullToObjectModule
 #PlanarStatisticsModule
+AcquisitionModule
 HMTrackingModule
 ConnectedComponentsRLEModule
 BlobFilteringModule
