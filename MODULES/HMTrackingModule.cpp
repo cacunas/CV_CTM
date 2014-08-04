@@ -32,9 +32,9 @@ bool HMTrackingModule::init()
 bool HMTrackingModule::run()
 {
     // Current frame from the datapool
-    QImage& currIm = *(m_data->currentImage);
+    QImage currIm = m_data->currentImage->convertToFormat(QImage::Format_RGB888);
     // To avoid problems of formats, converto to RGB888
-    currIm = currIm.convertToFormat(QImage::Format_RGB888);
+    //currIm = currIm.convertToFormat(QImage::Format_RGB888);
     this->HackROI(currIm);
 
     // Local variables to store results
@@ -65,6 +65,22 @@ bool HMTrackingModule::run()
 bool HMTrackingModule::updateParameters()
 {
     return true;
+}
+
+cv::Mat HMTrackingModule::QImageTocvMat(QImage *img, int format)
+{
+    return cv::Mat(
+                    img->height(),
+                    img->width(),
+                    format,
+                    img->bits(),
+                    img->bytesPerLine()
+                ).clone();
+}
+
+QImage HMTrackingModule::cvMatToQImage(const Mat &mat, QImage::Format format)
+{
+    return QImage(mat.data, mat.cols, mat.rows, format);
 }
 
 /**
@@ -398,7 +414,7 @@ QImage HMTrackingModule::ForeGround(const QImage curr, const QImage bg)
             pixelBg = bg.pixel(x,y);
 
             if ( (pixelBg == qRgb(0,0,0)) && (pixelIm != qRgb(0,0,0)) )
-                myIm.setPixel(x,y,pixelIm);
+                myIm.setPixel(x,y,qRgb(255,255,255));
             else
                 myIm.setPixel(x,y,qRgb(0,0,0));
         }
@@ -406,7 +422,7 @@ QImage HMTrackingModule::ForeGround(const QImage curr, const QImage bg)
 
     myIm = myIm.convertToFormat(QImage::Format_Indexed8);
 
-    Mat src = ASM::QImageToCvMat(myIm);
+    Mat src = this->QImageTocvMat(&myIm, CV_8UC1);
     //Mat dst;
 
     // Apply median filter
@@ -419,7 +435,8 @@ QImage HMTrackingModule::ForeGround(const QImage curr, const QImage bg)
     Mat element = getStructuringElement(cv::MORPH_CROSS, cv::Size(3,3));
     morphologyEx(src, src, cv::MORPH_OPEN, element);
 
-    myIm = ASM::cvMatToQImage(src);
+    //myIm = ASM::cvMatToQImage(src);
+    myIm = this->cvMatToQImage(src, QImage::Format_Indexed8);
     return myIm;
 }
 

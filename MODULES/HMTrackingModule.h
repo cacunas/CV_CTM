@@ -46,8 +46,11 @@ private:
     float A_t[4];// intensity thresholds (R,G,B,Gray)
     QImage ROI_mask;// Dirty ROI trick
 
-    // Convert ARGB QImage to Index8 QImage
-    //QImage ARGB2RGB(const QImage argb);
+    //Convert QImage to cv::Mat
+    cv::Mat QImageTocvMat(QImage* img, int format);
+
+    //Convert cv::Mat to QImage
+    QImage cvMatToQImage(const cv::Mat& mat, QImage::Format format);
 
     //Calculates Intensity Histograms per channel
     vector<hist> calculateHistograms(const QImage img);
