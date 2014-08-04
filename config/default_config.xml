@@ -36,22 +36,7 @@
     <!--startFrame value="0" /--> <!-- Personality -->
     <!--startFrame value="820" /--> <!-- First degu video-->
     <subDirectories value="no" />
-    <!--<subDirectories value="no" />-->
-    <!--<videoDirectory value="/home/mzuniga/SECUENCIA-TEST" />-->
-    <!--videoDirectory value="/home/mzuniga/VIDEOS/DEGU2" /-->
-    <!--videoDirectory value="/home/mzuniga/VIDEOS/PRUEBA" /-->
-<!--    <videoDirectory value="/home/mzuniga/VIDEOS/HAMSTER-DIRS/0000" />-->
-    <!--videoDirectory value="/home/mzuniga/VIDEOS/DEGUS/CIRCULAR1" /-->
-<!--    <videoDirectory value="/home/mzuniga/VIDEOS/DEGUS/CIRCULAR2" />-->
-<!--    <videoDirectory value="/media/extra-ext4/VIDEOS/DEGUS/LBJ/hembras/dia1/303LBD1" />-->
-<!--    <videoDirectory value="/home/labcv/videoFootball/alfheim/" />-->
     <videoDirectory value="/home/cacunas/Escritorio/CV_CTM/VideoFiles/" />
-<!--    <videoDirectory value="/home/cacunas/Escritorio/CV_CTM/VideoFiles" />-->
-    <!--videoDirectory value="/home/mzuniga/VIDEOS/PERSO-JPG" /-->
-
-    <!--<videoDirectory value="/VAT-DATA/VIDEOS/FOOTBALL"/>-->
-
-    <!--videoDirectory value="/home/mzuniga/VIDEOS/FOOTBALL" /-->
     <!--Last resource if VAT is not able to recover a proper milliseconds difference from image timestamps (maybe unexisting timestamp). -->
     <defaultMillisecs value="40" />
   <!--store currentImage in previousImage /-->
@@ -66,5 +51,23 @@
    <saveCurrent value="yes" />-->
 </HMTrackingModule>
 
+<ConnectedComponentsRLEModule>
+    <!-- RLE vertical step for building runs -->
+    <Step value="1" />
+    <!-- Tolerance of non foreground pixels distance to consider a foreground pixel as part of the run -->
+    <Tolerance value="0" />
+</ConnectedComponentsRLEModule>
+
+<BlobFilteringModule>
+    <!-- Minimal blob height -->
+        <MinHeight value="8" />
+    <!-- Minimal blob width -->
+        <MinWidth value="8" />
+    <!-- Minimal blob area -->
+        <MinArea value="64" />
+    <!-- Rate of pixels to horizontally and vertically ignore from image borders -->
+    <IgnoreBorderRate value="0.05" />
+    <!--IgnoreBorderRate value="0" /-->
+</BlobFilteringModule>
 
 </MODULE_PARAMETERS>

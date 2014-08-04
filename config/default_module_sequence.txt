@@ -4,9 +4,7 @@ AcquisitionModule
 #segmentationModule
 #segmentationWithColorFilterModule
 #MorphologyModule
-#ConnectedComponentsRLEModule
 #ConnectedComponentsTwoStepsModule
-#BlobFilteringModule
 #GrayCodeModule
 #ContextModule
 #ReliabilityMultiModelTrackingModule
@@ -14,3 +12,5 @@ AcquisitionModule
 #HullToObjectModule
 #PlanarStatisticsModule
 HMTrackingModule
+ConnectedComponentsRLEModule
+BlobFilteringModule

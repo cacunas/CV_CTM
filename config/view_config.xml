@@ -23,9 +23,9 @@
         <Row value="1"/>
         <Column value="0"/>
         <Label value="ForeGround (Blobs)"/>
-                <afterModule value="HMTrackingModule"/>
+                <afterModule value="BlobFilteringModule"/>
                 <sequence value="true">
-                        <setForeground/>
+                        <setBlobs/>
                 </sequence>
     </View>
     <View value="true">
